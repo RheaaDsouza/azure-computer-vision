@@ -1,12 +1,12 @@
+from copyreg import constructor
 from flask import Flask, render_template, request, redirect,send_from_directory, url_for
 from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import VisualFeatureTypes
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from msrest.authentication import CognitiveServicesCredentials
 
-import os
-import time
 from array import array
+import requests, os, uuid, time, json
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,6 +15,12 @@ subscription_key = os.getenv('subscription_key')
 endpoint = os.getenv('endpoint')
 computervision_client = ComputerVisionClient(endpoint,CognitiveServicesCredentials(subscription_key))
 
+# Load the values from .env
+'''
+t_key = os.getenv('t_key')
+t_endpoint = os.getenv('t_endpoint')
+location = os.getenv('LOCATION')
+'''
 dirname = os.path.dirname(__file__)
 
 def read_local(read):
@@ -99,8 +105,46 @@ def upload_image():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             filepath=os.path.join(app.config['UPLOAD_FOLDER'],filename)
             read_image= open(filepath, "rb")
-            result = read_local(read_image) 
+            result = read_local(read_image)
     return render_template("index.html" ,filename=filename,prediction=result)
+
+@app.route("/translator", methods=['GET', 'POST'])
+def index_post():
+    # Add your subscription key and endpoint
+    t_key = "c9c3392706d94f5784ff59b99781e1a5"
+    t_endpoint = "https://api.cognitive.microsofttranslator.com"
+    location = "eastus"
+    '''t_key= os.getenv('t_key')
+    t_endpoint=os.getenv('t_endpoint')
+    location= os.getenv('location')'''
+    # Read the values from the form
+    original_text = request.form.get('ex_text')
+    print(original_text)
+    target_language = request.form.get('language')
+    print(target_language)
+    
+    path='/translate'
+    params = {
+    'api-version': '3.0',
+    'to': [target_language]
+    }
+    constructed_url = t_endpoint + path
+    # Set up the header information, which includes our subscription key
+    headers = {
+        'Ocp-Apim-Subscription-Key': t_key,
+        'Ocp-Apim-Subscription-Region': location,
+        'Content-type': 'application/json',
+        'X-ClientTraceId': str(uuid.uuid4())
+    }
+    # Create the body of the request with the text to be translated
+    body = [{ 'text': original_text }]
+    translator_request = requests.post(constructed_url,params=params, headers=headers, json=body)
+    translator_response = translator_request.json()
+    print(json.dumps(translator_response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
+    translated_text = translator_response[0]['translations'][0]['text']
+    
+    #Passing the translated text,original text, and target language to the template
+    return render_template('translator.html', translated_text=translated_text)
   
 if __name__ == '__main__':
     app.run(debug=True)   

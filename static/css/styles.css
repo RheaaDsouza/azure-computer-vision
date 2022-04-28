@@ -1,3 +1,13 @@
+html{
+    height: 100%;
+}
+
 body{
     background-color: rgb(28, 32, 43)!important;
+}
+
+footer{
+    position: inherit;
+    width: 100%;
+    background-color: rgb(172, 212, 247) !important;
 }

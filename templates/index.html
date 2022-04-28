@@ -5,10 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="../static/css/styles.css">
+  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
 </head>
 <body>
 
@@ -62,17 +65,66 @@
     {% if prediction %}
     <h5 style="color:#fff!important;"> Predicted Text: </h5>
     <div class="shadow p-4 mb-4 bg-white"> {{prediction}}</div> 
-    <h5>Uploaded Image:</h5>
+    <h5 style="color:#fff!important;">Uploaded Image:</h5>
     <img src="{{img_path}}">
     
 	  {% endif %}
+
+
     {% if filename %}
 	  <div>
 		  <img style="height: 400px; width: 400px" src="{{url_for('static', filename='uploads/'+filename)}}">
 	  </div>
+
     {% endif %}
+    <br>
+    <h2 style="text-align:center; color:white!important;">Translator</h2>
+    <form class="form-horizontal" action="/translator" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+          <label for="language" style="color:white;">Text:</label>
+          <textarea name="ex_text" id="example4" class="form-control">{{prediction}}</textarea>
+      </div>
+      <div class="form-group">
+          <label for="language" style="color:white;">Language:</label>
+          <select name="language" class="form-control">
+              <option value="en">Select value</option>
+              <option value="az">Assamese</option>
+              <option value="bn">Bangla</option>
+              <option value="gu">Gujarati</option>
+              <option value="hi">Hindi</option>
+              <option value="kn">Kannada</option>
+              <option value="ml">Malayalam</option>
+              <option value="pa">Punjabi</option>
+              <option value="ta">Tamil</option>
+              <option value="te">Telugu</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+          </select>
+      </div>
+      <div>
+          <button type="submit" class="btn btn-light">Translate</button>
+      </div>
+      <br>
+      {% block sidebar %} {% endblock %}
+  </form>
+
+
+
+    
     <br><br>
     <a href={{url_for('main')}}>Try another one!</a>
 </div>
+
+  <footer>
+    <div>
+        <p style="padding:15px; text-align:center;">
+          <strong>OCR</strong> by Rachael ,Rhea and Janice
+          <span class="icon is-small">
+            <i class="fa fa-copyright"></i>
+          </span>2022</a>
+        </p>
+    </div>
+  <footer>
 </body>
 </html>
